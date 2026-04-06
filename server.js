@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 // 🔥 PUT YOUR VALUES HERE
-const APP_ID = "vpaas-magic-cookie-bef646f17b5d4bd0a4b6d0fb2558b906/eb0e13";  // full app id
+const APP_ID = "vpaas-magic-cookie-bef646f17b5d4bd0a4b6d0fb2558b906";  // full app id
 const KID = "eb0e13"; // last part of your API key
 const PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
 MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCtrfPUO6pSxZEe
