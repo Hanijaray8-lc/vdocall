@@ -41,13 +41,13 @@ kdk6w2RtiVYA1SSrQwMtLFo=
 
 // 🔐 Generate JWT
 app.post("/get-token", (req, res) => {
-  const { room, userName } = req.body;
+  const { userName } = req.body;
 
   const payload = {
     aud: "jitsi",
-    iss: APP_ID,
+    iss: "vpaas-magic-cookie-bef646f17b5d4bd0a4b6d0fb2558b906", // ✅ ONLY APP ID
     sub: "8x8.vc", // ✅ MUST BE EXACT
-    room: "*",     // ✅ IMPORTANT
+    room: "*", // ✅ IMPORTANT FIX
     context: {
       user: {
         name: userName || "Guest",
