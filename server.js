@@ -43,17 +43,19 @@ P+btjMrDONIsDhjjzFbJrsnsI8ycV8bWKKidg9rWmE+s/FP74XzI2I3LfHROK43s
 app.post("/get-token", (req, res) => {
   const { userName } = req.body;
 
-  const payload = {
-    aud: "jitsi",
-    iss: "vpaas-magic-cookie-bef646f17b5d4bd0a4b6d0fb2558b906", // ✅ ONLY APP ID
-    sub: "8x8.vc", // ✅ MUST BE EXACT
-    room: "*", // ✅ IMPORTANT FIX
-    context: {
-      user: {
-        name: userName || "Guest",
-      },
+const ROOM_NAME = "my-room";
+
+const payload = {
+  aud: "jitsi",
+  iss: "vpaas-magic-cookie-bef646f17b5d4bd0a4b6d0fb2558b906",
+  sub: "8x8.vc",
+  room: LC, // ✅ EXACT MATCH
+  context: {
+    user: {
+      name: userName || "Guest",
     },
-  };
+  },
+};
   const token = jwt.sign(payload, PRIVATE_KEY, {
     algorithm: "RS256",
     expiresIn: "1h",
