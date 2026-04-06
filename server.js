@@ -1,6 +1,14 @@
+const express = require("express");
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
 
-const APP_ID = "vpaas-magic-cookie-bef646f17b5d4bd0a4b6d0fb2558b906";
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// 🔥 PUT YOUR VALUES HERE
+const APP_ID = "vpaas-magic-cookie-bef646f17b5d4bd0a4b6d0fb2558b906/eb0e13";  // full app id
+const KID = "eb0e13"; // last part of your API key
 const PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDCsSXh5yw1rwwu
 5mcDLkg6SrZv0i1QRCl3KnmQGcNZWp2dNDqFwlrQMxyKZEYUR45OJV/M1Hf2G3eG
@@ -31,6 +39,7 @@ kdk6w2RtiVYA1SSrQwMtLFo=
 -----END PRIVATE KEY-----
 `;
 
+// 🔐 Generate JWT
 app.post("/get-token", (req, res) => {
   const { room, userName } = req.body;
 
@@ -45,14 +54,15 @@ app.post("/get-token", (req, res) => {
       },
     },
   };
-
   const token = jwt.sign(payload, PRIVATE_KEY, {
     algorithm: "RS256",
     expiresIn: "1h",
     header: {
-      kid: "eb0e13", // ✅ YOUR KEY ID
-    },
+      kid: KID   // ✅ IMPORTANT FIX
+    }
   });
 
   res.json({ token });
 });
+
+app.listen(5000, () => console.log("Server running on port 5000"));
