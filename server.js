@@ -36,9 +36,7 @@ pTFXwlwYUsavt0wiCyXdx1YII58F1K+L/CHHVn2WOhdId6cFsRdYj383ArNOAhe+
 kEWwQzxRngu9Qz/5OlLly18hjD+iDwaGd6hFA+StsED5xpqZHZu4uXdHsOx+AKIx
 h/I6zLYKUZ8qqwfok0FzRls0teEcUXvM/pjoc8gdS4cyUxq5Ai9lIxqFwJw4wMOk
 CIFsg66+S7tEcuvioOOoySE=
------END PRIVATE KEY-----
-
-`;
+-----END PRIVATE KEY-----`;
 
 // 🔐 Generate JWT
 app.post("/get-token", (req, res) => {
