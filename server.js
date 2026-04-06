@@ -55,15 +55,8 @@ app.get("/get-token", (req, res) => {
 
   res.json({ token });
 });
-  const token = jwt.sign(payload, PRIVATE_KEY, {
-    algorithm: "RS256",
-    expiresIn: "10h",
-    header: {
-      kid: KID   // ✅ IMPORTANT FIX
-    }
-  });
 
-  res.json({ token });
-});
+
+
 
 app.listen(5000, () => console.log("Server running on port 5000"));
