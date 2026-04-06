@@ -39,22 +39,22 @@ CIFsg66+S7tEcuvioOOoySE=
 -----END PRIVATE KEY-----`;
 
 // 🔐 Generate JWT
-app.post("/get-token", (req, res) => {
-  const { userName } = req.body;
+app.get("/get-token", (req, res) => {
+  const payload = {
+    aud: "jitsi",
+    iss: "vpaas-magic-cookie-bef646f17b5d4bd0a4b6d0fb2558b906",
+    sub: "8x8.vc",
+    room: "my-room",
+  };
 
-  const ROOM_NAME = "my-room";
+  const token = jwt.sign(payload, PRIVATE_KEY, {
+    algorithm: "RS256",
+    expiresIn: "1h",
+    header: { kid: KID },
+  });
 
-const payload = {
-  aud: "jitsi",
- iss: APP_ID,
-  sub: "8x8.vc",
-  room: ROOM_NAME, // ✅ EXACT MATCH
-  context: {
-    user: {
-      name: userName || "Guest",
-    },
-  },
-};
+  res.json({ token });
+});
   const token = jwt.sign(payload, PRIVATE_KEY, {
     algorithm: "RS256",
     expiresIn: "10h",
