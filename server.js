@@ -4,7 +4,7 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
-const { v4: uuidv4 } = require("uuid");
+const uuidv4 = () => Math.random().toString(36).substring(2, 15);
 const PORT = process.env.PORT || 5000;
 
 const app = express();
