@@ -1,14 +1,21 @@
+// server.js
+// npm install express jsonwebtoken cors uuid
+
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
+const { v4: uuidv4 } = require("uuid");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🔥 PUT YOUR VALUES HERE
-const APP_ID = "vpaas-magic-cookie-bef646f17b5d4bd0a4b6d0fb2558b906";  // full app id
-const KID = "52ab6a"; // last part of your API key
+// ─── YOUR JAAS CREDENTIALS ────────────────────────────────────────────────────
+// Get these from https://jaas.8x8.vc/#/apikeys
+const APP_ID  = "vpaas-magic-cookie-bef646f17b5d4bd0a4b6d0fb2558b906"; // full AppID
+const API_KEY = "52ab6a";   // Key ID (kid) — the short part shown in dashboard
+
+// ⚠️  Paste your downloaded private key exactly as-is (keep the line breaks)
 const PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCTQgDuqagsKzSL
 q5aLD5v4BOAIAzCdAwJRFm2lcEozPQ4buSXLX8a0+sp3iF6c2Vw31mHzvd2O3375
@@ -37,33 +44,56 @@ GM2gvmSScHGjnSkRVwkNX2uwLZx4BcrCsbFdbH69vwJqMU7IYAEnd3NDwqHQp0fg
 KmaxNR0nkgsOF3Va//SIz/cQuQKnQK08KUqPevJkMKe8z+qTlwvGlv9Hn4gTd3VW
 qIzotKi0C/BIFqOMu/nOKfc=
 -----END PRIVATE KEY-----`;
+// ─────────────────────────────────────────────────────────────────────────────
 
-// 🔐 Generate JWT
+// Fixed room name — everyone who visits will join THIS room
+const ROOM_NAME = "my-secure-room";
+
 app.post("/get-token", (req, res) => {
-  const { userName } = req.body;
+  try {
+    const { userName, isModerator } = req.body;
+    const now = Math.floor(Date.now() / 1000);
 
-  const ROOM_NAME = "my-room";
+    // ✅ CORRECT JWT payload — matches 8x8 JaaS official format exactly
+    const payload = {
+      aud: "jitsi",                   // ✅ must be "jitsi"
+      iss: "chat",                    // ✅ must be "chat" (NOT your APP_ID)
+      sub: APP_ID,                    // ✅ your full AppID goes here
+      room: "*",                      // ✅ wildcard — allows any room
+      exp: now + (60 * 60 * 10),      // expires in 10 hours
+      nbf: now - 10,                  // valid 10 seconds before now (clock drift)
+      context: {
+        user: {
+          id: uuidv4(),               // unique participant ID
+          name: userName || "Guest",
+          email: "guest@meeting.com",
+          moderator: isModerator ? "true" : "true", // everyone = moderator so no auth fail
+          avatar: "",
+        },
+        features: {
+          livestreaming: "false",
+          recording: "false",
+          transcription: "false",
+          "outbound-call": "false",
+        },
+      },
+    };
 
-const payload = {
-  aud: "jitsi",
- iss: APP_ID,
-  sub: "8x8.vc",
-  room: ROOM_NAME, // ✅ EXACT MATCH
-  context: {
-    user: {
-      name: userName || "Guest",
-    },
-  },
-};
-  const token = jwt.sign(payload, PRIVATE_KEY, {
-    algorithm: "RS256",
-    expiresIn: "10h",
-    header: {
-      kid: KID   // ✅ IMPORTANT FIX
-    }
-  });
+    const token = jwt.sign(payload, PRIVATE_KEY, {
+      algorithm: "RS256",
+      header: {
+        kid: `${APP_ID}/${API_KEY}`, // ✅ CORRECT kid format: "appId/keyId"
+      },
+    });
 
-  res.json({ token });
+    res.json({ token, room: ROOM_NAME });
+  } catch (err) {
+    console.error("Token generation error:", err);
+    res.status(500).json({ error: "Token generation failed", details: err.message });
+  }
 });
 
-app.listen(5000, () => console.log("Server running on port 5000"));
+// Health check
+app.get("/", (req, res) => res.json({ status: "JaaS token server running ✅" }));
+
+app.listen(5000, () => console.log("✅ Server running on http://localhost:5000"));
