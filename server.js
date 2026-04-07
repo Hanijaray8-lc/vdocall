@@ -5,6 +5,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const { v4: uuidv4 } = require("uuid");
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 app.use(cors());
@@ -95,6 +96,4 @@ app.post("/get-token", (req, res) => {
 
 // Health check
 app.get("/", (req, res) => res.json({ status: "JaaS token server running ✅" }));
-const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
